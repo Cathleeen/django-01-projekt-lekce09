@@ -14,7 +14,7 @@ from django_tables2 import SingleTableView
 from django_tables2 import SingleTableMixin
 import crm.tables as tables
 from django_filters.views import FilterView
-from crm.filters import OpportunityFilter, OpportunityFilterFormHelper
+from crm.filters import OpportunityFilter, OpportunityFilterFormHelper, CompanyFilter, CompanyFilterFormHelper
 
 class IndexView(TemplateView):
     template_name = "index.html"
@@ -26,9 +26,17 @@ class CompanyCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     # Translators: This message is shown after successful creation of a company
     success_message = _("Company created!")
 
-class CompanyListView(LoginRequiredMixin, ListView):
+class CompanyListView(LoginRequiredMixin, SingleTableMixin, FilterView):
     model = models.Company
     template_name = "company/list_company.html"
+    table_class = tables.CompanyTable
+    filterset_class = CompanyFilter
+
+    def get_filterset(self, filterset_class):
+        filterset = super().get_filterset(filterset_class)
+        filterset.form.helper = CompanyFilterFormHelper()
+        return filterset
+
 
 class OpportunityCreateView(PermissionRequiredMixin, SuccessMessageMixin, CreateView):
     permission_required = 'crm.add_opportunity'
@@ -37,12 +45,21 @@ class OpportunityCreateView(PermissionRequiredMixin, SuccessMessageMixin, Create
     success_url = reverse_lazy("index")
     success_message = "Opportunity created!"
 
+
 class OpportunityUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
     model = models.Opportunity
     form_class = OpportunityForm
     template_name = "opportunity/update_opportunity.html"
     success_url = reverse_lazy("index")
     success_message = "Opportunity updated!"
+
+
+class CompanyUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    model = models.Company
+    form_class = CompanyForm
+    template_name = "company/update_company.html"
+    success_url = reverse_lazy("index")
+    success_message = "Company updated!"
 
 
 class EmployeeUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):

@@ -70,6 +70,11 @@ class Opportunity(models.Model):
     created_on = models.DateTimeField(auto_now_add=True, null=True)
     updated_on = models.DateTimeField(auto_now=True, null=True)
 
+    class Meta:
+        verbose_name = _("Opportunity")
+        verbose_name_plural = _("Opportunities")
+
+
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     department = models.CharField(max_length=100, blank=True)
